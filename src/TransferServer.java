@@ -56,7 +56,9 @@ public class TransferServer {
     private synchronized void downloadFile(String instruction, DataInputStream dis) {
         //Reading the message from the client
         File newTempFile = new File("receivedData.txt");
-
+		
+		long startTime = System.nanoTime();
+		
         Scanner instructionReading = new Scanner(instruction);
         instructionReading.useDelimiter("-");
         instructionReading.next(); //skip "SENDING"
@@ -84,6 +86,11 @@ public class TransferServer {
 		
         fileHashMap.put(filename, newTempFile);
         System.out.println("FILES IN HASH MAP: " + fileHashMap.size());
+		
+		long endTime = System.nanoTime();
+		long duration = ((endTime - startTime)/1000000);
+		System.out.println("File uploaded to server in " + duration + " milliseconds");
+		
     }//end of downloadFile
 
     private synchronized void sendFile(String instruction, Socket sock){
@@ -99,6 +106,8 @@ public class TransferServer {
         File toSend = fileHashMap.get(filename);
         if(toSend != null){ //if file was found
             try{
+				long startTime = System.nanoTime();
+				
                 DataOutputStream dataOutputStream = new DataOutputStream(sock.getOutputStream());
                 byte[] bytesArray = new byte[(int) toSend.length()];
                 FileInputStream fis = new FileInputStream(toSend);
@@ -109,6 +118,12 @@ public class TransferServer {
                
 				fis.close();
                 dataOutputStream.close();
+				
+				
+				long endTime = System.nanoTime();
+				long duration = ((endTime - startTime)/1000000);
+				System.out.println("File uploaded to server in " + duration + " milliseconds");
+		
             } catch(Exception e){
                 e.printStackTrace();
             }
