@@ -110,7 +110,11 @@ public class TransferServer {
         in.next(); //skip the "DOWNLOAD"
         String filename = in.next();
         int filesize = in.nextInt();
-
+		
+		if(this.fileHashMap == null){
+            this.fileHashMap = new HashMap<String,File>();
+        }
+		
         //find file to send
         File toSend = fileHashMap.get(filename);
         if(toSend != null){ //if file was found
