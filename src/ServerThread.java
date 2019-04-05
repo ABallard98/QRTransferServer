@@ -1,4 +1,4 @@
-import java.io.DataInputStream;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -6,16 +6,27 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 
-public class ServerThread implements Runnable{
+/**
+ * This class implements a thread that creates a server socket, along with a HashMap to store transferred files.
+ * When a connection is found, a ConnectionThread object is created to handle the request.
+ */
+public class ServerThread extends Thread{
 
-    public static HashMap<String, File> fileHashMap;
-    private ServerSocket serverSocket;
-    private final int PORT = 8007;
+    public static HashMap<String, File> fileHashMap; //HashMap for transferred files
+    private ServerSocket serverSocket; //Server socket
+    private final int PORT = 8007; //Port for server socket
 
+    /**
+     * Default constructor for ServerThread object
+     */
     public ServerThread(){
         this.fileHashMap = new HashMap<>();
     }
 
+    /**
+     * In this method, the server socket will loop awaiting for a connection,
+     * when a connection is found, a new ConnectionThread object is created and ran.
+     */
     @Override
     public void run() {
         try {
@@ -32,18 +43,26 @@ public class ServerThread implements Runnable{
                 ConnectionThread connectionThread = new ConnectionThread(sock);
                 Thread ct = new Thread(connectionThread);
                 ct.start();
-                //connectionThread.run();
+
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Method to put a file into the file HashMap
+     * @param file - File to store
+     */
     public static synchronized void putFileInHashMap(File file){
         fileHashMap.put(file.getName(),file);
     }
 
-    public static synchronized void getFileFromHashMap(File file){
-        fileHashMap.get(file.getName());
+    /**
+     * Method to return a file from the file HashMap
+     * @param fileName - name of file to find
+     */
+    public static synchronized void getFileFromHashMap(String fileName){
+        fileHashMap.get(fileName);
     }
 }

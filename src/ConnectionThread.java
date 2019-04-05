@@ -3,14 +3,26 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Scanner;
 
+/**
+ * This class implements a runnable to handle the requests for file transfers from other devices
+ */
 public class ConnectionThread implements Runnable {
 
-    private Socket socket;
+    private Socket socket; //Socket of other device
 
+    /**
+     * Default constructor for ConnectionThread
+     * @param socket
+     */
     public ConnectionThread(Socket socket){
-        this.socket = socket;
+        this.socket = socket; //allocating socket of other device
     }
 
+    /**
+     * This method is used to read an instruction sent from the target device. If the instruction is a 'SENDING'
+     * instruction, then the method downloadFile is called. If the instruction is a 'DOWNLOAD' instruction, then the
+     * sendFile instruction is called.
+     */
     @Override
     public void run() {
         try{
@@ -28,6 +40,12 @@ public class ConnectionThread implements Runnable {
         }
     }
 
+    /**
+     * This method implements the process to send a file from the server, to the target device. This method is also
+     * synchronized to prevent deadlocks on the ServerThread HashMap
+     * @param instruction - instruction received by target device
+     * @param dis - DataInputStream
+     */
     private synchronized void downloadFile(String instruction, DataInputStream dis) {
 
         HashMap fileHashMap = ServerThread.fileHashMap;
@@ -53,7 +71,6 @@ public class ConnectionThread implements Runnable {
             while ((read = dis.read(buffer, 0, Math.min(buffer.length, remaining))) > 0) {
                 totalRead += read;
                 remaining -= read;
-                //System.out.println("read " + totalRead + " bytes.");
                 fos.write(buffer, 0, read);
             }
             dis.close();
@@ -77,6 +94,12 @@ public class ConnectionThread implements Runnable {
 
     }//end of downloadFile
 
+    /**
+     * This method implements the process to download a file to the server from the target device. This method is also
+     * synchronized to prevent deadlocks on the ServerThread HashMap
+     * @param instruction - instruction received by target device
+     * @param sock - Socket of target device
+     */
     private synchronized void sendFile(String instruction, Socket sock){
         System.out.println("Attempting to send file to " + sock.toString());
 
