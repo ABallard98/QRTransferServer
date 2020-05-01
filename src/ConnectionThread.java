@@ -60,9 +60,10 @@ public class ConnectionThread implements Runnable {
         int fileSize = instructionReading.nextInt();
 
         //Reading the message from the client
-        File newTempFile = new File("files"+File.separator+filename);
+        File newTempFile = new File("files/"+filename);
 
         try {
+            newTempFile.createNewFile();
             FileOutputStream fos = new FileOutputStream(newTempFile);
             byte[] buffer = new byte[4096];
             int read = 0;
@@ -80,7 +81,6 @@ public class ConnectionThread implements Runnable {
         }
 
         try{
-            //fileHashMap.put(filename, newTempFile);
             ServerThread.fileHashMap.put(filename, newTempFile);
         } catch (NullPointerException e){
             e.printStackTrace();
@@ -90,7 +90,9 @@ public class ConnectionThread implements Runnable {
 
         long endTime = System.nanoTime();
         long duration = ((endTime - startTime)/1000000);
-        System.out.println("File uploaded to server in " + duration + " milliseconds");
+        System.out.println("File uploaded from server in " + duration + " milliseconds");
+        //save transaction history
+        FileReaderWriter.saveTransaction(false,socket,filename);
 
     }//end of downloadFile
 
@@ -131,8 +133,10 @@ public class ConnectionThread implements Runnable {
                 long endTime = System.nanoTime();
                 long duration = ((endTime - startTime)/1000000);
 
-                System.out.println("File sent from server in " + duration + " milliseconds");
+                System.out.println("File sent to server in " + duration + " milliseconds");
 
+                //save transaction history
+                FileReaderWriter.saveTransaction(true,socket,filename);
             } catch(Exception e){
                 e.printStackTrace();
             }
