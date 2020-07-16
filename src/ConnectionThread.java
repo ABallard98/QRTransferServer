@@ -60,7 +60,7 @@ public class ConnectionThread implements Runnable {
         int fileSize = instructionReading.nextInt();
 
         //Reading the message from the client
-        File newTempFile = new File("files/"+filename);
+        File newTempFile = new File("src/files/"+filename);
 
         try {
             newTempFile.createNewFile();
