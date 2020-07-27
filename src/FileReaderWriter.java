@@ -21,6 +21,25 @@ public class FileReaderWriter {
         }
     }
 
+    /**
+     * Method to delete all saved files on the server
+     * @return - true if files successfully deleted
+     */
+    public static synchronized boolean deleteAllStoredFiles(){
+        try{
+            File dir = new File("Files"+File.separator);
+            File[] files = dir.listFiles();
+            for(File f : files){
+                f.delete();
+            }
+            System.out.println("Saved files deleted successfully.");
+            return true;
+        } catch (Exception e){
+            System.out.println("Saved files were not succesfully deleted.");
+            return false;
+        }
+    }
+
 
 
 

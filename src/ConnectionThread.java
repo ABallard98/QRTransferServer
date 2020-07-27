@@ -30,14 +30,31 @@ public class ConnectionThread implements Runnable {
             String instruction = dis.readUTF();
             System.out.println("INSTRUCTION RECEIVED: " + instruction);
 
-            if(instruction.contains("SENDING")){ //IF UPLOADING A FILE TO SERVER
+            String typeOfInstruction = getInstruction(instruction);
+
+            if(typeOfInstruction.equalsIgnoreCase("SENDING")){ //IF UPLOADING A FILE TO SERVER
                 downloadFile(instruction, dis);
-            } else if (instruction.contains("DOWNLOAD")){ //IF DOWNLOADING A FILE FROM SERVER
+            } else if (typeOfInstruction.equalsIgnoreCase("DOWNLOAD")){ //IF DOWNLOADING A FILE FROM SERVER
                 sendFile(instruction,socket);
+            } else if (typeOfInstruction.equalsIgnoreCase("WAIT_FOR_DOWNLOAD")){
+                //todo implement socket waiting for file to be uploaded
             }
         } catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Method to get the type of instruction from the instruction sent from
+     * the connecting device
+     * @param s - String s
+     * @return - Instruction as a String
+     */
+    private String getInstruction(String s){
+        Scanner in = new Scanner(s);
+        in.useDelimiter("-");
+        String instruction = in.next();
+        return instruction;
     }
 
     /**
@@ -144,4 +161,8 @@ public class ConnectionThread implements Runnable {
             System.out.println("Error - could not find file");
         }
     }//end of sendFile
+
+    private synchronized void mobileToDesktopTransfer(Socket sock){
+
+    }
 }
